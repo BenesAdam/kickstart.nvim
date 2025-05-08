@@ -57,6 +57,9 @@ vim.opt.breakindent = true
 -- Save undo history
 vim.opt.undofile = true
 
+-- Do not use swap file
+vim.opt.swapfile = false
+
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -135,6 +138,24 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+
+-- Really great remaps
+vim.keymap.set('x', '<leader>pp', [["_dP]], { desc = '[P]aste [P]reviously yanked text without losing it' })
+vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]], { desc = '[D]elete to black hole' })
+
+vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]], { desc = '[Y]ank into system clipboard' })
+vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = '[Yank] whole line into system clipboard' })
+vim.keymap.set('n', '<leader>yy', [["+Y]], { desc = '[Yank] whole line into system clipboard' })
+
+-- vim.keymap.set('n', '<C-k>', '<cmd>cnext<CR>zz', { desct = 'Go up in quickfix list' })
+-- vim.keymap.set('n', '<C-j>', '<cmd>cprev<CR>zz', { desct = 'Go down in quickfix list' })
+-- vim.keymap.set('n', '<leader>k', '<cmd>lnext<CR>zz', { desct = 'Go up in location list' })
+-- vim.keymap.set('n', '<leader>j', '<cmd>lprev<CR>zz', { desct = 'Go down in location list' })
+
+-- Pick compile commands JSON
+vim.keymap.set('n', '<leader>sc', function()
+  require('custom.pick_compile_commands').PickCompileCommands()
+end, { desc = '[S]earch [C]ompile commands JSON file' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -275,6 +296,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>p', group = '[P]roject' },
+        { '<leader>y', group = '[Y]ank' },
         { 'g', group = 'Lan[G]uage Server Protocol' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
@@ -831,10 +853,13 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
+  -- Cellular-Automaton
+  { 'Eandrju/cellular-automaton.nvim' },
+
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
-      -- Better Around/Inside textobjects
+      -- Better Around/Inside textobjects:
       --
       -- Examples:
       --  - va)  - [V]isually select [A]round [)]paren
@@ -906,7 +931,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
