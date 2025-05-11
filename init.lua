@@ -103,6 +103,9 @@ vim.opt.expandtab = true
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
+-- Enable 24-bit RGB color
+vim.opt.termguicolors = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -151,7 +154,6 @@ vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]], { desc = '[D]elete to black h
 
 vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]], { desc = '[Y]ank into system clipboard' })
 vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = '[Yank] whole line into system clipboard' })
-vim.keymap.set('n', '<leader>yy', [["+Y]], { desc = '[Yank] whole line into system clipboard' })
 
 -- vim.keymap.set('n', '<C-k>', '<cmd>cnext<CR>zz', { desct = 'Go up in quickfix list' })
 -- vim.keymap.set('n', '<C-j>', '<cmd>cprev<CR>zz', { desct = 'Go down in quickfix list' })
@@ -500,6 +502,9 @@ require('lazy').setup({
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+
+          -- Displays hover information about symbol (K by default, just to see it here)
+          map('K', vim.lsp.buf.hover, 'Displays hover information about symbol')
 
           -- Find references for the word under your cursor.
           map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -867,6 +872,9 @@ require('lazy').setup({
     'mg979/vim-visual-multi',
     -- <Ctrl j>, <Ctrl k>
   },
+
+  -- golf.nvim
+  { 'vuciv/golf' },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
