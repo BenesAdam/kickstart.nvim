@@ -873,9 +873,6 @@ require('lazy').setup({
     -- <Ctrl j>, <Ctrl k>
   },
 
-  -- golf.nvim
-  { 'vuciv/golf' },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
