@@ -114,8 +114,8 @@ vim.opt.termguicolors = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Go back to file explorer
-vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = '[P]roject [V]iew alias directory listing' })
-
+-- vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = '[P]roject [V]iew alias directory listing' })
+--
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -149,7 +149,8 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
 -- Really great remaps
-vim.keymap.set('x', '<leader>pp', [["_dP]], { desc = '[P]aste [P]reviously yanked text without losing it' })
+vim.keymap.set('x', '<leader>p', [["_dP]], { desc = '[P]aste [P]reviously yanked text without losing it' })
+vim.keymap.set('n', '<leader>p', [["+p]], { desc = '[P]aste [P]reviously yanked text in OS clipboard.' })
 vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]], { desc = '[D]elete to black hole' })
 
 vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]], { desc = '[Y]ank into system clipboard' })
