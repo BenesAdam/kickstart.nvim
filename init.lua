@@ -536,6 +536,12 @@ require('lazy').setup({
           --  the definition of its *type*, not where it was *defined*.
           map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
 
+          -- Lists incoming calls for the word under your cursor.
+          map('grci', require('telescope.builtin').lsp_incoming_calls, '[G]oto [C]alls [I]ncoming')
+
+          -- Lists outcoming calls for the word under your cursor.
+          map('grco', require('telescope.builtin').lsp_outgoing_calls, '[G]oto [C]alls [O]utcoming')
+
           -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
           ---@param client vim.lsp.Client
           ---@param method vim.lsp.protocol.Method
