@@ -162,9 +162,13 @@ vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = '[Yank] whole line into syste
 -- vim.keymap.set('n', '<leader>j', '<cmd>lprev<CR>zz', { desct = 'Go down in location list' })
 
 -- Pick compile commands JSON
-vim.keymap.set('n', '<leader>sc', function()
+vim.keymap.set('n', '<leader>sC', function()
   require('custom.pick_compile_commands').PickCompileCommands()
-end, { desc = '[S]earch [C]ompile commands JSON file' })
+end, { desc = '[S]earch and pick [C]ompile commands JSON file' })
+
+vim.keymap.set('n', '<leader>sc', function()
+  require('custom.pick_compile_commands').SearchFileInCompileCommands()
+end, { desc = '[S]earch within [C]ompile commands JSON file' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`

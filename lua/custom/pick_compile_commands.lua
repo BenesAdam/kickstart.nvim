@@ -50,7 +50,7 @@ end
 require('lspconfig').clangd.setup {
   on_new_config = function(new_config, root_dir)
     if compileCommandsDir then
-      new_config.cmd = { 'clangd', '--compile-commands-dir=' .. compileCommandsDir}
+      new_config.cmd = { 'clangd', '--compile-commands-dir=' .. compileCommandsDir }
     end
   end,
 }
@@ -60,6 +60,65 @@ require('lspconfig').clangd.setup {
 --   Add: -Wno-unknown-warning-option
 --   Remove: [-m*, -f*]
 
+function GetFilesFromCompileCommands()
+  local files = {}
+
+  -- Try to pick file if it was not picked yet
+  if compileCommandsPath == nil then
+    PickCompileCommands()
+  end
+
+  if compileCommandsPath == nil then
+    vim.notify('File not picked', vim.log.levels.ERROR)
+    return files
+  end
+
+  -- Read file
+  local file = io.open(compileCommandsPath, 'r')
+
+  if not file then
+    vim.notify('File reading error', vim.log.levels.ERROR)
+    return files
+  end
+
+  local fileContent = file:read 'a'
+  file:close()
+
+  -- Parse file
+  local compileCommands = vim.fn.json_decode(fileContent)
+
+  if not compileCommands then
+    vim.notify('File parsing error', vim.log.levels.ERROR)
+    return files
+  end
+
+  -- Agregate all files
+  for _, commandObject in ipairs(compileCommands) do
+    table.insert(files, commandObject.file)
+  end
+
+  return files
+end
+
+function SearchFileInCompileCommands()
+  local files = GetFilesFromCompileCommands()
+
+  local pickers = require 'telescope.pickers'
+  local finders = require 'telescope.finders'
+  local sorters = require 'telescope.sorters'
+
+  pickers
+    .new({}, {
+      prompt_title = 'Files within compile commands',
+      finder = finders.new_table {
+        results = files,
+      },
+      sorter = sorters.get_generic_fuzzy_sorter(),
+    })
+    :find()
+end
+
 return {
   PickCompileCommands = PickCompileCommands,
+  SearchFileInCompileCommands = SearchFileInCompileCommands,
 }
