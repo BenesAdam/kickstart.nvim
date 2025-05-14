@@ -63,21 +63,16 @@ require('lspconfig').clangd.setup {
 function GetFilesFromCompileCommands()
   local files = {}
 
-  -- Try to pick file if it was not picked yet
+  -- Read file
   if compileCommandsPath == nil then
-    PickCompileCommands()
-  end
-
-  if compileCommandsPath == nil then
-    vim.notify('File not picked', vim.log.levels.ERROR)
+    vim.notify('Compile commands not picked yet', vim.log.levels.ERROR)
     return files
   end
 
-  -- Read file
   local file = io.open(compileCommandsPath, 'r')
 
   if not file then
-    vim.notify('File reading error', vim.log.levels.ERROR)
+    vim.notify('Compile commands file not existed', vim.log.levels.ERROR)
     return files
   end
 
@@ -88,13 +83,16 @@ function GetFilesFromCompileCommands()
   local compileCommands = vim.fn.json_decode(fileContent)
 
   if not compileCommands then
-    vim.notify('File parsing error', vim.log.levels.ERROR)
+    vim.notify('Compile commands JSON parsing error', vim.log.levels.ERROR)
     return files
   end
 
   -- Agregate all files
   for _, commandObject in ipairs(compileCommands) do
-    table.insert(files, commandObject.file)
+    local file = commandObject.file
+    file = vim.fs.abspath(file)
+    vim.notify(file, vim.log.levels.INFO)
+    table.insert(files, file)
   end
 
   return files
@@ -106,6 +104,8 @@ function SearchFileInCompileCommands()
   local pickers = require 'telescope.pickers'
   local finders = require 'telescope.finders'
   local sorters = require 'telescope.sorters'
+  local actions = require 'telescope.actions'
+  local action_state = require 'telescope.actions.state'
 
   pickers
     .new({}, {
@@ -114,6 +114,15 @@ function SearchFileInCompileCommands()
         results = files,
       },
       sorter = sorters.get_generic_fuzzy_sorter(),
+
+      attach_mappings = function(prompt_bufnr, map)
+        actions.select_default:replace(function()
+          actions.close(prompt_bufnr)
+          local selection = action_state.get_selected_entry()
+          vim.cmd('edit ' .. selection.value)
+        end)
+        return true
+      end,
     })
     :find()
 end
