@@ -1,7 +1,7 @@
 local compileCommandsDir = nil
 local compileCommandsPath = nil
 
-function PickCompileCommands()
+function PickCompileCommands(callback)
   local telescope = require 'telescope.builtin'
 
   telescope.find_files {
@@ -39,6 +39,10 @@ function PickCompileCommands()
         vim.defer_fn(function()
           vim.notify(compileCommandsPath, vim.log.levels.INFO)
         end, 200)
+
+        if callback then
+          callback()
+        end
       end)
 
       return true
@@ -99,6 +103,12 @@ function GetFilesFromCompileCommands()
 end
 
 function SearchFileInCompileCommands()
+  -- Make sure compile commands was picked
+  if compileCommandsPath == nil then
+    PickCompileCommands(SearchFileInCompileCommands)
+    return
+  end
+
   local files = GetFilesFromCompileCommands()
 
   local pickers = require 'telescope.pickers'
