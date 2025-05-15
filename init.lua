@@ -411,6 +411,16 @@ require('lazy').setup({
         })
       end, { desc = '[/] Fuzzily search in current buffer' })
 
+      -- Search in all files
+      vim.keymap.set('n', '<leader>sF', function()
+        builtin.find_files {
+          prompt_title = 'Find all files',
+          follow = true,
+          no_ignore = true,
+          no_ignore_parent = true,
+        }
+      end, { desc = '[S]earch all [F]iles' })
+
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
       vim.keymap.set('n', '<leader>s/', function()
