@@ -556,6 +556,9 @@ require('lazy').setup({
           -- Lists outcoming calls for the word under your cursor.
           map('grco', require('telescope.builtin').lsp_outgoing_calls, '[G]oto [C]alls [O]utcoming')
 
+          -- Toggle source/header file
+          map('gko', vim.cmd.ClangdSwitchSourceHeader, 'Toggle source/header file')
+
           -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
           ---@param client vim.lsp.Client
           ---@param method vim.lsp.protocol.Method
