@@ -31,8 +31,6 @@ function PickCompileCommands(callback)
         -- Reload buffer
         if vim.api.nvim_buf_get_name(0) ~= '' then
           vim.cmd 'edit'
-        else
-          vim.cmd('e ' .. compileCommandsPath)
         end
 
         -- Print out new compile commands
@@ -95,7 +93,6 @@ function GetFilesFromCompileCommands()
   for _, commandObject in ipairs(compileCommands) do
     local file = commandObject.file
     file = vim.fs.abspath(file)
-    vim.notify(file, vim.log.levels.INFO)
     table.insert(files, file)
   end
 
