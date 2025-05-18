@@ -34,21 +34,21 @@ return {
       desc = 'Debug: Start/Continue',
     },
     {
-      '<F1>',
-      function()
-        require('dap').step_into()
-      end,
-      desc = 'Debug: Step Into',
-    },
-    {
-      '<F2>',
+      '<F10>',
       function()
         require('dap').step_over()
       end,
       desc = 'Debug: Step Over',
     },
     {
-      '<F3>',
+      '<F11>',
+      function()
+        require('dap').step_into()
+      end,
+      desc = 'Debug: Step Into',
+    },
+    {
+      '<F12>',
       function()
         require('dap').step_out()
       end,
@@ -95,6 +95,7 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         -- 'delve', -- TODO: add debugger
+        'codelldb', -- C/C++ debugger
       },
     }
 
@@ -145,5 +146,39 @@ return {
     --     detached = vim.fn.has 'win32' == 0,
     --   },
     -- }
+
+    local lldb_config = {
+      codelldb_path = 'codelldb.cmd', -- for some reason it needs to end with '.cmd'
+      configurations = {
+        cpp = {
+          {
+            name = 'PI10 UT',
+            type = 'lldb',
+            request = 'launch',
+            cwd = '${workspaceFolder}',
+            program = function()
+              -- Build unittest
+              vim.notify('Building...', vim.log.levels.INFO)
+              local out = vim.fn.system 'm_git.bat linker'
+
+              if vim.v.shell_error ~= 0 then
+                vim.notify('Error during building.' .. out, vim.log.levels.ERROR)
+                return nil
+              end
+
+              -- Get executable path
+              local current_dir = require('plenary.path'):new(vim.fn.getcwd())
+              local folder_name = current_dir:_split()[#current_dir:_split()]
+              local output = '/output/est90_unittest/' .. folder_name .. '_pc_msvc10/' .. folder_name .. '_pc_msvc10.exe'
+              vim.notify('Debugging: ' .. output, vim.log.levels.INFO)
+
+              return output
+            end,
+          },
+        },
+      },
+    }
+
+    require('dap-lldb').setup(lldb_config)
   end,
 }
