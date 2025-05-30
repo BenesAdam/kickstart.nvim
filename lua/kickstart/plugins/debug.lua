@@ -147,6 +147,10 @@ return {
     --   },
     -- }
 
+    local current_dir = require('plenary.path'):new(vim.fn.getcwd())
+    local ut_folder_name = current_dir:_split()[#current_dir:_split()]
+    local ut_output_folder = '/output/est90_unittest/' .. ut_folder_name .. '_pc_msvc10'
+
     local lldb_config = {
       codelldb_path = 'codelldb.cmd', -- for some reason it needs to end with '.cmd'
       configurations = {
@@ -155,7 +159,8 @@ return {
             name = 'PI10 UT',
             type = 'lldb',
             request = 'launch',
-            cwd = '${workspaceFolder}',
+            cwd = ut_output_folder,
+            stopAtEntry = false,
             program = function()
               -- Build unittest
               vim.notify('Building...', vim.log.levels.INFO)
@@ -167,9 +172,7 @@ return {
               end
 
               -- Get executable path
-              local current_dir = require('plenary.path'):new(vim.fn.getcwd())
-              local folder_name = current_dir:_split()[#current_dir:_split()]
-              local output = '/output/est90_unittest/' .. folder_name .. '_pc_msvc10/' .. folder_name .. '_pc_msvc10.exe'
+              local output = ut_output_folder .. '/' .. ut_folder_name .. '_pc_msvc10.exe'
               vim.notify('Debugging: ' .. output, vim.log.levels.INFO)
 
               return output
