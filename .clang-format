@@ -1,0 +1,15 @@
+BasedOnStyle: llvm
+IndentWidth: 2
+ColumnLimit: 0
+SortIncludes: false
+ReflowComments: false
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+TabWidth: 2
+NamespaceIndentation: All
+PointerAlignment: Left
+FixNamespaceComments: false
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerIndentWidth: 2
+AlignEscapedNewlines: DontAlign

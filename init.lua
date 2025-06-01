@@ -798,10 +798,7 @@ require('lazy').setup({
       formatters = {
         clang_format = {
           command = 'clang-format',
-          -- prepend_args = { '--style={BasedOnStyle: Microsoft, IndentWidth: 2, ColumnLimit: 0, SortIncludes: false, ReflowComments: false}' },
-          prepend_args = {
-            '--style={BasedOnStyle: llvm, IndentWidth: 2, ColumnLimit: 0, SortIncludes: false, ReflowComments: false, BreakBeforeBraces: Allman, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: false, TabWidth: 2, NamespaceIndentation: All, PointerAlignment: Left, FixNamespaceComments: false, BreakConstructorInitializers: AfterColon, ConstructorInitializerIndentWidth: 2}',
-          },
+          prepend_args = { '-style=file:' .. os.getenv 'HOME' .. '/AppData/Local/nvim/.clang-format' },
         },
       },
     },
