@@ -22,7 +22,6 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
-    'julianolf/nvim-dap-lldb', -- TODO: check this
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -147,41 +146,59 @@ return {
     --   },
     -- }
 
+    -- PI10 UT
     local current_dir = require('plenary.path'):new(vim.fn.getcwd())
     local ut_folder_name = current_dir:_split()[#current_dir:_split()]
     local ut_output_folder = '/output/est90_unittest/' .. ut_folder_name .. '_pc_msvc10'
 
-    local lldb_config = {
-      codelldb_path = 'codelldb.cmd', -- for some reason it needs to end with '.cmd'
-      configurations = {
-        cpp = {
-          {
-            name = 'PI10 UT',
-            type = 'lldb',
-            request = 'launch',
-            cwd = ut_output_folder,
-            stopAtEntry = false,
-            program = function()
-              -- Build unittest
-              vim.notify('Building...', vim.log.levels.INFO)
-              local out = vim.fn.system 'm_git.bat linker'
+    local get_ut_executable = function()
+      -- Build unittest
+      vim.notify('Building...', vim.log.levels.INFO)
+      local out = vim.fn.system 'm_git.bat linker'
 
-              if vim.v.shell_error ~= 0 then
-                vim.notify('Error during building.' .. out, vim.log.levels.ERROR)
-                return nil
-              end
+      if vim.v.shell_error ~= 0 then
+        vim.notify('Error during building.' .. out, vim.log.levels.ERROR)
+        return nil
+      end
 
-              -- Get executable path
-              local output = ut_output_folder .. '/' .. ut_folder_name .. '_pc_msvc10.exe'
-              vim.notify('Debugging: ' .. output, vim.log.levels.INFO)
+      -- Get executable path
+      local output = ut_output_folder .. '/' .. ut_folder_name .. '_pc_msvc10.exe'
+      vim.notify('Debugging: ' .. output, vim.log.levels.INFO)
 
-              return output
-            end,
-          },
-        },
+      return output
+    end
+
+    -- DAP configurations
+    local dap = require 'dap'
+    dap.adapters.lldb = {
+      type = 'server',
+      port = '${port}',
+      executable = {
+        command = 'codelldb.cmd',
+        args = { '--port', '${port}' },
+        detached = vim.loop.os_uname().sysname ~= 'Windows',
       },
     }
 
-    require('dap-lldb').setup(lldb_config)
+    dap.configurations.cpp = {
+      {
+        name = 'PI10 UT',
+        type = 'lldb',
+        request = 'launch',
+        cwd = ut_output_folder,
+        stopAtEntry = false,
+        program = get_ut_executable,
+      },
+      {
+        name = 'PI10 SIL',
+        type = 'lldb',
+        request = 'attach',
+        cwd = '/output/est90_sil',
+        stopAtEntry = false,
+        program = '/output/est90_sil/delivery/EST90_EVDEGT/EST90_EVDEGT.exe',
+      },
+    }
+
+    dap.configurations.c = dap.configurations.cpp
   end,
 }
