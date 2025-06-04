@@ -688,7 +688,7 @@ require('lazy').setup({
       local servers = {
         clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -733,6 +733,7 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'clang-format', -- Used to format c/c++ code
         'mdformat', -- Used to format markdown
+        'black', -- Used to format python
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -789,7 +790,7 @@ require('lazy').setup({
         cpp = { 'clang_format' },
         md = { 'mdformat' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -1001,6 +1002,7 @@ require('lazy').setup({
         'cpp',
         'gitcommit',
         'git_rebase',
+        'python',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,

@@ -22,6 +22,8 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
+    'mfussenegger/nvim-dap-python',
+    'microsoft/debugpy',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -95,6 +97,7 @@ return {
         -- Update this to ensure that you have the debuggers for the langs you want
         -- 'delve', -- TODO: add debugger
         'codelldb', -- C/C++ debugger
+        'debugpy', -- Python debugger
       },
     }
 
@@ -200,5 +203,9 @@ return {
     }
 
     dap.configurations.c = dap.configurations.cpp
+
+    -- Python: setup with python path from debugpy env folder
+    local python_path = table.concat({ vim.fn.stdpath 'data', 'mason', 'packages', 'debugpy', 'venv', 'Scripts', 'python' }, '/'):gsub('//+', '/')
+    require('dap-python').setup(python_path)
   end,
 }
