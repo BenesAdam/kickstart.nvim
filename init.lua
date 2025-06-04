@@ -799,7 +799,7 @@ require('lazy').setup({
       formatters = {
         clang_format = {
           command = 'clang-format',
-          prepend_args = { '-style=file:' .. os.getenv 'HOME' .. '/AppData/Local/nvim/.clang-format' },
+          prepend_args = { '-style=file:' .. vim.env.HOME .. '/AppData/Local/nvim/.clang-format' },
         },
       },
     },
