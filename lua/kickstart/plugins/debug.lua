@@ -150,6 +150,9 @@ return {
     -- }
 
     -- PI10 UT
+    local stat = vim.uv.fs_stat '/repos/bsw_est90'
+    local is_pi10 = stat and stat.type == 'directory'
+
     local current_dir = require('plenary.path'):new(vim.fn.getcwd())
     local ut_folder_name = current_dir:_split()[#current_dir:_split()]
     local ut_output_folder = '/output/est90_unittest/' .. ut_folder_name .. '_pc_msvc10'
@@ -183,24 +186,27 @@ return {
       },
     }
 
-    dap.configurations.cpp = {
-      {
+    dap.configurations.cpp = {}
+
+    if is_pi10 then
+      table.insert(dap.configurations.cpp, {
         name = 'PI10 UT',
         type = 'lldb',
         request = 'launch',
         cwd = ut_output_folder,
         stopAtEntry = false,
         program = get_ut_executable,
-      },
-      {
+      })
+
+      table.insert(dap.configurations.cpp, {
         name = 'PI10 SIL',
         type = 'lldb',
         request = 'attach',
         cwd = '/output/est90_sil',
         stopAtEntry = false,
         program = '/output/est90_sil/delivery/EST90_EVDEGT/EST90_EVDEGT.exe',
-      },
-    }
+      })
+    end
 
     dap.configurations.c = dap.configurations.cpp
 
