@@ -1,13 +1,13 @@
 local compileCommandsDir = nil
 local compileCommandsPath = nil
 
-function PickCompileCommands(callback)
+function PickCompileCommands(root_folder, callback)
   local telescope = require 'telescope.builtin'
 
   telescope.find_files {
     prompt_title = 'Pick compile_commands.json',
     previewer = false,
-    find_command = { 'rg', '--files', '--hidden', '--no-ignore', '--glob', 'compile_commands.json', '/', '--no-messages' },
+    find_command = { 'rg', '--files', '--hidden', '--no-ignore', '--glob', 'compile_commands.json', root_folder, '--no-messages' },
     attach_mappings = function(prompt_bufnr, map)
       local actions = require 'telescope.actions'
       local action_state = require 'telescope.actions.state'
@@ -102,7 +102,7 @@ end
 function SearchFileInCompileCommands()
   -- Make sure compile commands was picked
   if compileCommandsPath == nil then
-    PickCompileCommands(SearchFileInCompileCommands)
+    PickCompileCommands('/', SearchFileInCompileCommands)
     return
   end
 

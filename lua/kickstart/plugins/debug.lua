@@ -211,7 +211,20 @@ return {
     dap.configurations.c = dap.configurations.cpp
 
     -- Python: setup with python path from debugpy env folder
-    local python_path = table.concat({ vim.fn.stdpath 'data', 'mason', 'packages', 'debugpy', 'venv', 'Scripts', 'python' }, '/'):gsub('//+', '/')
+    local is_linux = vim.loop.os_uname().sysname == 'Linux'
+
+    local python_path = table
+      .concat({
+        vim.fn.stdpath 'data',
+        'mason',
+        'packages',
+        'debugpy',
+        'venv',
+        is_linux and 'bin' or 'Scripts',
+        'python',
+      }, '/')
+      :gsub('//+', '/')
+
     require('dap-python').setup(python_path)
   end,
 }
