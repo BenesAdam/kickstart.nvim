@@ -936,6 +936,9 @@ require('lazy').setup({
   -- Cellular-Automaton
   { 'Eandrju/cellular-automaton.nvim' },
 
+  -- VSCode color scheme
+  { 'Mofiqul/vscode.nvim' },
+
   -- Multiline edit
   {
     'mg979/vim-visual-multi',
