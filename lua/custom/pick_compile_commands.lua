@@ -1,5 +1,6 @@
 local compileCommandsDir = nil
 local compileCommandsPath = nil
+local compileCommandsFiles = nil
 
 function PickCompileCommands(root_folder, callback)
   local telescope = require 'telescope.builtin'
@@ -32,6 +33,9 @@ function PickCompileCommands(root_folder, callback)
         if vim.api.nvim_buf_get_name(0) ~= '' then
           vim.cmd 'edit'
         end
+
+        -- Parse compile commands
+        compileCommandsFiles = GetFilesFromCompileCommands()
 
         -- Print out new compile commands
         vim.defer_fn(function()
@@ -106,8 +110,6 @@ function SearchFileInCompileCommands()
     return
   end
 
-  local files = GetFilesFromCompileCommands()
-
   local pickers = require 'telescope.pickers'
   local finders = require 'telescope.finders'
   local sorters = require 'telescope.sorters'
@@ -118,7 +120,7 @@ function SearchFileInCompileCommands()
     .new({}, {
       prompt_title = 'Files within compile commands',
       finder = finders.new_table {
-        results = files,
+        results = compileCommandsFiles,
       },
       sorter = sorters.get_generic_fuzzy_sorter(),
 
