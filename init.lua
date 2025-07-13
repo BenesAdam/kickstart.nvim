@@ -161,18 +161,23 @@ vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = '[Yank] whole line into syste
 -- vim.keymap.set('n', '<leader>k', '<cmd>lnext<CR>zz', { desct = 'Go up in location list' })
 -- vim.keymap.set('n', '<leader>j', '<cmd>lprev<CR>zz', { desct = 'Go down in location list' })
 
--- Pick compile commands JSON
+-- Compile commands JSON
 vim.keymap.set('n', '<leader>jc', function()
-  require('custom.pick_compile_commands').PickCompileCommands(vim.fn.getcwd())
+  require('custom.pick_compile_commands').pick_compile_commands(vim.fn.getcwd())
 end, { desc = 'Pro[j]ect: Pick [c]ompile commands JSON file in working directory' })
 
 vim.keymap.set('n', '<leader>jC', function()
-  require('custom.pick_compile_commands').PickCompileCommands '/'
+  require('custom.pick_compile_commands').pick_compile_commands '/'
 end, { desc = 'Pro[j]ect: Pick [C]ompile commands JSON file in root directory' })
 
 vim.keymap.set('n', '<leader>sc', function()
-  require('custom.pick_compile_commands').SearchFileInCompileCommands()
+  require('custom.pick_compile_commands').search_file_in_compile_commands()
 end, { desc = '[S]earch within [C]ompile commands JSON file' })
+
+-- Project
+vim.keymap.set('n', '<leader>np', function()
+  require('custom.project_picker').pick_project_folder()
+end, { desc = 'Pick project and copy it to current directory' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -1082,6 +1087,12 @@ require('lazy').setup({
     },
   },
 })
+
+-- [[ Project ]]
+local projectInitLua = vim.fn.getcwd() .. '/lua/init.lua'
+if vim.fn.file_readable(projectInitLua) == 1 then
+  dofile(projectInitLua)
+end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -77,6 +77,13 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
+    {
+      '<F8>',
+      function()
+        require('dap').terminate()
+      end,
+      desc = 'Debug: Stop',
+    },
   },
   config = function()
     local dap = require 'dap'
@@ -175,7 +182,6 @@ return {
     end
 
     -- DAP configurations
-    local dap = require 'dap'
     dap.adapters.lldb = {
       type = 'server',
       port = '${port}',
@@ -183,6 +189,16 @@ return {
         command = 'codelldb.cmd',
         args = { '--port', '${port}' },
         detached = vim.loop.os_uname().sysname ~= 'Windows',
+      },
+    }
+
+    dap.adapters.gdb = {
+      type = 'executable',
+      command = 'gdb',
+      name = 'gdb',
+      args = { '-i', 'dap' },
+      options = {
+        detached = false,
       },
     }
 
