@@ -54,11 +54,21 @@ function M.pick_compile_commands(root_folder, callback)
   }
 end
 
+function M.get_command()
+  local cmd = { 'clangd' }
+
+  if compile_commands_dir then
+    cmd = { 'clangd', '--compile-commands-dir=' .. compile_commands_dir }
+  end
+
+  return cmd
+end
+
 -- Setting of new clangd clients
 require('lspconfig').clangd.setup {
   on_new_config = function(new_config, root_dir)
     if compile_commands_dir then
-      new_config.cmd = { 'clangd', '--compile-commands-dir=' .. compile_commands_dir }
+      new_config.cmd = M.get_command()
     end
   end,
 }
@@ -136,6 +146,22 @@ function M.search_file_in_compile_commands()
       end,
     })
     :find()
+end
+
+function M.get_compile_commands_dir()
+  if compile_commands_dir ~= nil then
+    return compile_commands_dir
+  else
+    return ''
+  end
+end
+
+function M.get_compile_commands_path()
+  if compile_commands_path ~= nil then
+    return compile_commands_path
+  else
+    return ''
+  end
 end
 
 return M

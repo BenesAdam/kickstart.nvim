@@ -7,7 +7,7 @@ local action_state = require 'telescope.actions.state'
 
 local function copy_folder_contents(source_folder)
   local target_folder = vim.fn.getcwd()
-  local cmd = string.format('cp -r "%s"/* "%s"', source_folder, target_folder)
+  local cmd = string.format('cp -a "%s"/. "%s"', source_folder, target_folder)
   vim.fn.system(cmd)
 end
 

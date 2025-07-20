@@ -9,8 +9,9 @@
   - [x] Add template to some nvim folder
   - [x] Select&Copy template to current folder
 - [ ] Update cache files when compile command is selected
-  - [ ] Move this functionality to other module called something like `custom_find_files.lua`
+  - [ ] Move this functionality to other module called something like `custom/find_files.lua`
   - [ ] Search either in `compile_commands.json` on preferable in `build.ninja`.
+  - [ ] Search for every header file in -I folder?
   - [ ] Search for:
       - [ ] *.cpp, *.hpp files
       - [ ] *.c, *.h files
