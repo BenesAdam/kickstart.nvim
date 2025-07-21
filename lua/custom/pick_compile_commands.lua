@@ -1,8 +1,12 @@
 local M = {}
+-- If some warnings create '.clangd' file in root with content:
+-- CompileFlags:
+--   Add: -Wno-unknown-warning-option
+--   Remove: [-m*, -f*]
 
 local compile_commands_dir = nil
 local compile_commands_path = nil
-local compile_commands_files = nil
+local parsed_files = nil
 
 function M.pick_compile_commands(root_folder, callback)
   local telescope = require 'telescope.builtin'
@@ -29,18 +33,20 @@ function M.pick_compile_commands(root_folder, callback)
         }
 
         -- Restart clangd clients
-        vim.cmd 'LspRestart clangd'
+        local lsp_clients = vim.lsp.get_clients { name = 'clangd' }
+        if #lsp_clients > 0 then
+          vim.cmd 'LspRestart clangd'
+        end
 
         -- Parse compile commands
-        compile_commands_files = get_files_from_compile_commands()
-
         -- Print out new compile commands
         vim.defer_fn(function()
+          parsed_files = require('custom.find_files').get_files(compile_commands_path)
           vim.notify(compile_commands_path, vim.log.levels.INFO)
-        end, 1000)
+        end, 20)
 
         if callback then
-          callback()
+          callback() -- TODO: not working right now
         end
       end)
 
@@ -68,48 +74,6 @@ require('lspconfig').clangd.setup {
   end,
 }
 
--- If some warnings create '.clangd' file in root with content:
--- CompileFlags:
---   Add: -Wno-unknown-warning-option
---   Remove: [-m*, -f*]
-
-function get_files_from_compile_commands()
-  local files = {}
-
-  -- Read file
-  if compile_commands_path == nil then
-    vim.notify('Compile commands not picked yet', vim.log.levels.ERROR)
-    return files
-  end
-
-  local file = io.open(compile_commands_path, 'r')
-
-  if not file then
-    vim.notify('Compile commands file not existed', vim.log.levels.ERROR)
-    return files
-  end
-
-  local file_content = file:read 'a'
-  file:close()
-
-  -- Parse file
-  local compile_commands = vim.fn.json_decode(file_content)
-
-  if not compile_commands then
-    vim.notify('Compile commands JSON parsing error', vim.log.levels.ERROR)
-    return files
-  end
-
-  -- Agregate all files
-  for _, command_object in ipairs(compile_commands) do
-    local file = command_object.file
-    file = vim.fs.abspath(file)
-    table.insert(files, file)
-  end
-
-  return files
-end
-
 function M.search_file_in_compile_commands()
   -- Make sure compile commands was picked
   if compile_commands_path == nil then
@@ -127,7 +91,7 @@ function M.search_file_in_compile_commands()
     .new({}, {
       prompt_title = 'Files within compile commands',
       finder = finders.new_table {
-        results = compile_commands_files,
+        results = parsed_files,
       },
       sorter = sorters.get_generic_fuzzy_sorter(),
 

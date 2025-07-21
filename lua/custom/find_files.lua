@@ -1,16 +1,18 @@
-function get_files_from_compile_commands(compile_commands_path)
+M = {}
+
+local function get_files_from_compile_commands(compile_commands_path)
   local files = {}
 
   -- Read file
-  local file = io.open(compile_commands_path, 'r')
+  local file_handler = io.open(compile_commands_path, 'r')
 
-  if not file then
+  if not file_handler then
     vim.notify('Compile commands file not existed', vim.log.levels.ERROR)
     return files
   end
 
-  local file_content = file:read 'a'
-  file:close()
+  local file_content = file_handler:read 'a'
+  file_handler:close()
 
   -- Parse file
   local compile_commands = vim.fn.json_decode(file_content)
@@ -31,14 +33,15 @@ function get_files_from_compile_commands(compile_commands_path)
 end
 
 local function test_compile_commands()
-  local compile_command_path = 'E:/Downloads/test_project/build/compile_commands.json'
+  -- local compile_command_path = 'E:/Downloads/test_project/build/compile_commands.json'
+  local compile_command_path = 'I:/output/est90/compile_commands.json'
   local files = get_files_from_compile_commands(compile_command_path)
   for _, file in pairs(files) do
     print(file)
   end
 end
 
-function get_files_from_build_ninja(build_ninja_path)
+local function get_files_from_build_ninja(build_ninja_path)
   local files = {}
 
   local suffix_matches = {
@@ -101,12 +104,40 @@ function get_files_from_build_ninja(build_ninja_path)
 end
 
 local function test_build_ninja()
-  local build_ninja_path = 'E:/Downloads/test_project/build/build.ninja'
+  -- local build_ninja_path = 'E:/Downloads/test_project/build/build.ninja'
+  local build_ninja_path = 'I:/output/est90/build.ninja'
   local files = get_files_from_build_ninja(build_ninja_path)
+
+  local output_file = io.open(vim.fn.fnamemodify(build_ninja_path, ':h') .. '/nvim_test.txt', 'w')
   for _, file in pairs(files) do
-    print(file)
+    -- print(file)
+    output_file:write(file .. '\n')
   end
+  output_file:close()
 end
 
 -- test_compile_commands()
-test_build_ninja()
+-- test_build_ninja()
+
+function M.get_files(compile_commands_path)
+  local files = {}
+  local base_dir = vim.fn.fnamemodify(compile_commands_path, ':h')
+
+  -- build.ninja
+  local build_ninja_path = base_dir .. '/build.ninja'
+
+  -- if vim.fn.file_readable(build_ninja_path) == 1 then
+  --   local cmake_files = get_files_from_build_ninja(build_ninja_path)
+  --   vim.list_extend(files, cmake_files)
+  -- end
+
+  -- compile_commands.json
+  if vim.fn.file_readable(compile_commands_path) == 1 then
+    local source_files = get_files_from_compile_commands(compile_commands_path)
+    vim.list_extend(files, source_files)
+  end
+
+  return files
+end
+
+return M
