@@ -22,19 +22,14 @@ function M.pick_compile_commands(root_folder, callback)
         compile_commands_dir = vim.fs.normalize(dir)
         compile_commands_path = compile_commands_dir .. '/compile_commands.json'
 
+        -- New configuration of clangd
+        local lspconfig = require 'lspconfig'
+        lspconfig.clangd.setup {
+          cmd = M.get_command(),
+        }
+
         -- Restart clangd clients
-        for _, client in ipairs(vim.lsp.get_clients()) do
-          if client.name == 'clangd' then
-            client.stop()
-          end
-        end
-
-        vim.cmd 'LspRestart'
-
-        -- Reload buffer
-        if vim.api.nvim_buf_get_name(0) ~= '' then
-          vim.cmd 'edit'
-        end
+        vim.cmd 'LspRestart clangd'
 
         -- Parse compile commands
         compile_commands_files = get_files_from_compile_commands()
@@ -42,7 +37,7 @@ function M.pick_compile_commands(root_folder, callback)
         -- Print out new compile commands
         vim.defer_fn(function()
           vim.notify(compile_commands_path, vim.log.levels.INFO)
-        end, 200)
+        end, 1000)
 
         if callback then
           callback()
