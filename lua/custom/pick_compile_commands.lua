@@ -39,11 +39,9 @@ function M.pick_compile_commands(root_folder, callback)
         end
 
         -- Parse compile commands
-        -- Print out new compile commands
         vim.defer_fn(function()
           parsed_files = require('custom.find_files').get_files(compile_commands_path)
-          vim.notify(compile_commands_path, vim.log.levels.INFO)
-        end, 20)
+        end, 10)
 
         if callback then
           callback() -- TODO: not working right now
