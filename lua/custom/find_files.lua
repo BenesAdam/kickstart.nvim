@@ -43,104 +43,70 @@ end
 
 local function get_files_from_build_ninja(build_ninja_path)
   local files = {}
-
-  local suffix_matches = {
-    '%.cpp',
-    '%.hpp',
-    '%.c',
-    '%.h',
-    '%.asm',
-    '%.datafield',
-    '%.cmake', -- TODO: what about cmake file in output folder?
-    'CMakeLists%.txt',
+  local suffixes = {
+    '.cpp',
+    '.hpp',
+    '.c',
+    '.h',
+    '.asm',
+    '.datafield',
+    '.cmake',
+    'CMakeLists.txt',
   }
 
-  local Path = require 'plenary.path'
-
-  -- Read file
-  local file_handler = io.open(build_ninja_path, 'r')
-
-  if not file_handler then
-    vim.notify('build.ninja file not existed', vim.log.levels.ERROR)
+  local file = io.open(build_ninja_path, 'r')
+  if not file then
+    vim.notify('build.ninja file not found', vim.log.levels.ERROR)
     return files
   end
 
-  local file_content = file_handler:read 'a'
-  file_handler:close()
+  local base_dir = build_ninja_path:match '(.*/)'
+  local source_path = ''
+  local seen = {}
 
-  -- Get source path
-  local source_path_quoted = file_content:match '%-S"([^"]+)"'
-  local source_path_unquoted = file_content:match '%-S([^%s"]+)'
-  local source_path = source_path_quoted or source_path_unquoted or ''
-  source_path = string.gsub(source_path, '\\', '/')
-  source_path = string.gsub(source_path, '//', '/')
-
-  -- Get all files
-  file_content = string.gsub(file_content, '%$ ', '%*')
-  local base_dir = vim.fn.fnamemodify(build_ninja_path, ':h')
-  local all_files = {}
-  file_content = file_content:gsub('%$ ', '*')
-
-  for match in file_content:gmatch '(%S*[a-zA-Z]+%S*%.%S*[a-zA-Z]+%S*[^:\n%s\\%/"])' do
-    table.insert(all_files, match)
-  end
-
-  for i, val in ipairs(all_files) do
-    val = val:gsub('%*', ' ')
-    val = val:gsub('%$', '')
-    all_files[i] = val
-  end
-
-  -- Filter files
-  for _, file in ipairs(all_files) do
-    local path_object = Path:new(file)
-    if not path_object:is_absolute() then
-      path_object = Path:new(base_dir, file)
-    end
-
-    file = path_object:absolute()
-    file = string.gsub(file, '\\', '/')
-    file = string.gsub(file, '//', '/')
-
-    local approved_extension = false
-    for _, ext in ipairs(suffix_matches) do
-      if string.match(file, ext .. '$') then
-        approved_extension = true
-        break
+  for line in file:lines() do
+    if source_path == '' then
+      local s = line:match '%-S"([^"]+)"' or line:match '%-S([^%s"]+)'
+      if s then
+        source_path = s:gsub('\\', '/'):gsub('//', '/')
       end
     end
 
-    if approved_extension then
-      table.insert(files, file)
+    for word in line:gmatch '%S+' do
+      word = word:gsub('%*', ' '):gsub('%$', '')
+      for _, ext in ipairs(suffixes) do
+        if word:sub(-#ext) == ext then
+          if not word:match '^/' and not word:match '^%a:[/\\]' then
+            word = base_dir .. word
+          end
+
+          word = word:gsub('\\', '/'):gsub('//', '/')
+
+          if not seen[word] then
+            seen[word] = true
+            table.insert(files, word)
+          end
+
+          break
+        end
+      end
     end
   end
 
-  -- Sort files
-  table.sort(files, function(a, b)
-    local a_in_source = string.match(a, '^' .. source_path) ~= nil
-    local b_in_source = string.match(b, '^' .. source_path) ~= nil
-
-    if a_in_source and not b_in_source then
-      return true
-    elseif not a_in_source and b_in_source then
-      return false
-    else
-      return a < b
-    end
-  end)
+  file:close()
 
   return files
 end
 
 local function test_build_ninja()
-  local build_ninja_path = 'E:/Downloads/test_project/build/build.ninja'
-  -- local build_ninja_path = 'I:/output/est90/build.ninja'
+  -- local build_ninja_path = 'E:/Downloads/test_project/build/build.ninja'
+  local build_ninja_path = 'I:/output/est90/build.ninja'
   local files = get_files_from_build_ninja(build_ninja_path)
 
   local output_file = io.open(vim.fn.fnamemodify(build_ninja_path, ':h') .. '/nvim_test.txt', 'w')
   for _, file in pairs(files) do
-    print(file)
-    -- output_file:write(file .. '\n')
+    -- print(file)
+    output_file:write(file .. '\n')
   end
   output_file:close()
 end
@@ -155,12 +121,12 @@ function M.get_files(compile_commands_path)
   -- build.ninja
   local build_ninja_path = base_dir .. '/build.ninja'
 
-  if vim.fn.file_readable(build_ninja_path) == 1 then
-    local cmake_files = get_files_from_build_ninja(build_ninja_path)
-    vim.list_extend(files, cmake_files)
-    vim.notify(build_ninja_path, vim.log.levels.INFO)
-    return files
-  end
+  -- if vim.fn.file_readable(build_ninja_path) == 1 then
+  --   local cmake_files = get_files_from_build_ninja(build_ninja_path)
+  --   vim.list_extend(files, cmake_files)
+  --   vim.notify(build_ninja_path, vim.log.levels.INFO)
+  --   return files
+  -- end
 
   -- compile_commands.json
   if vim.fn.file_readable(compile_commands_path) == 1 then
