@@ -121,12 +121,12 @@ function M.get_files(compile_commands_path)
   -- build.ninja
   local build_ninja_path = base_dir .. '/build.ninja'
 
-  -- if vim.fn.file_readable(build_ninja_path) == 1 then
-  --   local cmake_files = get_files_from_build_ninja(build_ninja_path)
-  --   vim.list_extend(files, cmake_files)
-  --   vim.notify(build_ninja_path, vim.log.levels.INFO)
-  --   return files
-  -- end
+  if vim.fn.file_readable(build_ninja_path) == 1 then
+    local cmake_files = get_files_from_build_ninja(build_ninja_path)
+    vim.list_extend(files, cmake_files)
+    vim.notify(build_ninja_path, vim.log.levels.INFO)
+    return files
+  end
 
   -- compile_commands.json
   if vim.fn.file_readable(compile_commands_path) == 1 then
