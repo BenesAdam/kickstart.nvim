@@ -63,15 +63,6 @@ function M.get_command()
   return cmd
 end
 
--- Setting of new clangd clients
-require('lspconfig').clangd.setup {
-  on_new_config = function(new_config, root_dir)
-    if compile_commands_dir then
-      new_config.cmd = M.get_command()
-    end
-  end,
-}
-
 function M.search_file_in_compile_commands()
   -- Make sure compile commands was picked
   if compile_commands_path == nil then
