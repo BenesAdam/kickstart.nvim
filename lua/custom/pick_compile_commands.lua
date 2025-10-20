@@ -54,10 +54,13 @@ function M.pick_compile_commands(root_folder, callback)
 end
 
 function M.get_command()
-  local cmd = { 'clangd' }
+  local cmd = {
+    'clangd',
+    '--header-insertion=never',
+  }
 
   if compile_commands_dir then
-    cmd = { 'clangd', '--compile-commands-dir=' .. compile_commands_dir }
+    table.insert(cmd, '--compile-commands-dir=' .. compile_commands_dir)
   end
 
   return cmd
