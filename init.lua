@@ -255,6 +255,15 @@ require('lazy').setup({
     },
   },
 
+  { -- git blame visualizer for Neovim
+    'FabijanZulj/blame.nvim',
+    lazy = false,
+    config = function()
+      require('blame').setup {}
+      vim.keymap.set('n', '<leader>gb', '<cmd>BlameToggle<CR>', { desc = '[G]it [B]lame' })
+    end,
+  },
+
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -701,7 +710,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {
-          cmd = require('custom.pick_compile_commands').get_command()
+          cmd = require('custom.pick_compile_commands').get_command(),
         },
         -- gopls = {},
         pyright = {},

@@ -162,7 +162,7 @@ return {
 
     local current_dir = require('plenary.path'):new(vim.fn.getcwd())
     local ut_folder_name = current_dir:_split()[#current_dir:_split()]
-    local ut_output_folder = '/output/est90_unittest/' .. ut_folder_name .. '_pc_msvc10'
+    local ut_output_folder = '/output/est90_unittest/' .. ut_folder_name .. '_pc_msvc10/default'
 
     local get_ut_executable = function()
       -- Build unittest
@@ -175,7 +175,7 @@ return {
       end
 
       -- Get executable path
-      local output = ut_output_folder .. '/' .. ut_folder_name .. '_pc_msvc10.exe'
+      local output = ut_output_folder .. '/' .. ut_folder_name .. '_pc_msvc10_default.exe'
       vim.notify('Debugging: ' .. output, vim.log.levels.INFO)
 
       return output
