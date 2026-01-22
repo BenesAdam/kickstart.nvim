@@ -1,5 +1,13 @@
-# version 1.0.0
+# version 1.1.0
 all: run
+
+ifdef OS
+  # Windows
+  EXECUTABLE_FILE ?= example.exe
+else
+  # Linux
+  EXECUTABLE_FILE ?= example
+endif
 
 help:
 	@echo "Commands:"
@@ -19,14 +27,14 @@ build/CMakeCache.txt: CMakeLists.txt
 generate: build/CMakeCache.txt
 .PHONY: generate
 
-./build/example.exe: generate
-	cmake --build build
+./build/$(EXECUTABLE_FILE): generate
+	@cmake --build build
 
-build: ./build/example.exe
+build: ./build/$(EXECUTABLE_FILE)
 .PHONY: build
 
 run_only:
-	@./build/example.exe
+	@./build/$(EXECUTABLE_FILE)
 
 run: build run_only
 
