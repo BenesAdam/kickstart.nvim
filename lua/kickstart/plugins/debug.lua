@@ -84,6 +84,13 @@ return {
       end,
       desc = 'Debug: Stop',
     },
+    {
+      '<space>?',
+      function()
+        require('dapui').eval(nil, { enter = true })
+      end,
+      desc = 'Debug: Eval var under cursor.',
+    },
   },
   config = function()
     local dap = require 'dap'

@@ -17,6 +17,10 @@
 =====================================================================
 =================================================================--]]
 
+if vim.loader then
+  vim.loader.enable()
+end
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -946,9 +950,6 @@ require('lazy').setup({
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
-  -- Cellular-Automaton
-  { 'Eandrju/cellular-automaton.nvim' },
 
   -- VSCode color scheme
   { 'Mofiqul/vscode.nvim' },
