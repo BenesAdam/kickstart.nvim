@@ -719,6 +719,9 @@ require('lazy').setup({
         -- gopls = {},
         pyright = {},
         bashls = {},
+        neocmake = {
+          cmd = { 'neocmakelsp', 'stdio' },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -772,6 +775,7 @@ require('lazy').setup({
         'clang-format', -- Used to format c/c++ code
         'mdformat', -- Used to format markdown
         'black', -- Used to format python
+        'neocmake', -- LSP for cmake
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
     end,
