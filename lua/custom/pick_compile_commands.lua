@@ -66,38 +66,6 @@ function M.get_command()
   return cmd
 end
 
-function M.search_file_in_compile_commands()
-  -- Make sure compile commands was picked
-  if compile_commands_path == nil then
-    M.pick_compile_commands('/', search_file_in_compile_commands)
-    return
-  end
-
-  local pickers = require 'telescope.pickers'
-  local finders = require 'telescope.finders'
-  local sorters = require 'telescope.sorters'
-  local actions = require 'telescope.actions'
-  local action_state = require 'telescope.actions.state'
-
-  pickers
-    .new({}, {
-      prompt_title = 'Files within compile commands',
-      finder = finders.new_table {
-        results = parsed_files,
-      },
-      sorter = sorters.get_generic_fuzzy_sorter(),
-
-      attach_mappings = function(prompt_bufnr, map)
-        actions.select_default:replace(function()
-          actions.close(prompt_bufnr)
-          local selection = action_state.get_selected_entry()
-          vim.cmd('edit ' .. selection.value)
-        end)
-        return true
-      end,
-    })
-    :find()
-end
 
 function M.get_compile_commands_dir()
   if compile_commands_dir ~= nil then
@@ -110,6 +78,14 @@ end
 function M.get_compile_commands_path()
   if compile_commands_path ~= nil then
     return compile_commands_path
+  else
+    return ''
+  end
+end
+
+function M.get_parsed_files()
+  if compile_commands_dir ~= nil then
+    return parsed_files
   else
     return ''
   end

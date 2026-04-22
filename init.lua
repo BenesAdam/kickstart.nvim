@@ -175,8 +175,12 @@ vim.keymap.set('n', '<leader>jC', function()
 end, { desc = 'Pro[j]ect: Pick [C]ompile commands JSON file in root directory' })
 
 vim.keymap.set('n', '<leader>sc', function()
-  require('custom.pick_compile_commands').search_file_in_compile_commands()
+  require('custom.search_files_compile_commands').search_file_in_compile_commands()
 end, { desc = '[S]earch within [C]ompile commands JSON file' })
+
+vim.keymap.set('n', '<leader>sv', function()
+  require('custom.search_vars_compile_commands').search_vars_in_compile_commands()
+end, { desc = '[S]earch [V]ars within files in commands JSON file' })
 
 -- Project
 vim.keymap.set('n', '<leader>np', function()
