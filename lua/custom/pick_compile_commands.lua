@@ -63,9 +63,13 @@ function M.get_command()
     table.insert(cmd, '--compile-commands-dir=' .. compile_commands_dir)
   end
 
+  local project_clangd_sufix = require('custom.project_init').get_clangd_sufix()
+  if project_clangd_sufix ~= '' then
+    table.insert(cmd, project_clangd_sufix)
+  end
+
   return cmd
 end
-
 
 function M.get_compile_commands_dir()
   if compile_commands_dir ~= nil then

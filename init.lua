@@ -21,6 +21,8 @@ if vim.loader then
   vim.loader.enable()
 end
 
+require('custom.project_init').load()
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -1103,10 +1105,7 @@ require('lazy').setup({
 })
 
 -- [[ Project ]]
-local projectInitLua = vim.fn.getcwd() .. '/lua/init.lua'
-if vim.fn.file_readable(projectInitLua) == 1 then
-  dofile(projectInitLua)
-end
+require('custom.project_init').configure()
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
