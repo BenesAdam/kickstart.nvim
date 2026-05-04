@@ -6,7 +6,7 @@ function M.get_path()
 end
 
 function M.exists()
-  return vim.fn.file_readable(M.get_path()) == 1
+  return vim.fn.filereadable(M.get_path()) == 1
 end
 
 function M.load()
@@ -33,14 +33,10 @@ function M.get_clangd_sufix()
   if project_module ~= nil then
     if project_module.get_clangd_sufix ~= nil then
       return project_module.get_clangd_sufix()
-    else
-      vim.notify 'Function get_clangd_sufix not defined.'
-      return ''
     end
-  else
-    vim.notify 'Project module not exists.'
-    return ''
   end
+
+  return ''
 end
 
 return M

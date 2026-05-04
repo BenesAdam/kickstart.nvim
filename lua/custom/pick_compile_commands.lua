@@ -27,20 +27,17 @@ function M.pick_compile_commands(root_folder, callback)
         compile_commands_path = compile_commands_dir .. '/compile_commands.json'
 
         -- New configuration of clangd
-        local lspconfig = require 'lspconfig'
-        lspconfig.clangd.setup {
-          cmd = M.get_command(),
-        }
+        vim.lsp.config('clangd', {cmd = M.get_command()})
 
         -- Restart clangd clients
         local lsp_clients = vim.lsp.get_clients { name = 'clangd' }
         if #lsp_clients > 0 then
-          vim.cmd 'LspRestart clangd'
+          vim.cmd 'lsp restart clangd'
         end
 
         -- Parse compile commands
         vim.defer_fn(function()
-          parsed_files = require('custom.find_files').get_files(compile_commands_path)
+          parsed_files = require('custom.parse_compile_commands').get_files(compile_commands_path)
         end, 10)
 
         if callback then

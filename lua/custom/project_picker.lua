@@ -13,7 +13,7 @@ end
 
 function M.pick_project_folder()
   local project_path = vim.fn.stdpath 'config' .. '/project'
-  local folders = vim.fn.globpath(project_path .. '/', '*', 0, 1)
+  local folders = vim.fn.globpath(project_path .. '/', '*', false, true)
   require('telescope.pickers')
     .new({}, {
       prompt_title = 'Pick project folder',

@@ -183,14 +183,13 @@ vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = '[Yank] whole line into syste
 -- vim.keymap.set('n', '<leader>j', '<cmd>lprev<CR>zz', { desct = 'Go down in location list' })
 
 -- Compile commands JSON
--- TODO__ uncomment
--- vim.keymap.set('n', '<leader>jc', function()
---   require('custom.pick_compile_commands').pick_compile_commands(vim.fn.getcwd())
--- end, { desc = 'Pro[j]ect: Pick [c]ompile commands JSON file in working directory' })
---
--- vim.keymap.set('n', '<leader>jC', function()
---   require('custom.pick_compile_commands').pick_compile_commands '/'
--- end, { desc = 'Pro[j]ect: Pick [C]ompile commands JSON file in root directory' })
+vim.keymap.set('n', '<leader>jc', function()
+  require('custom.pick_compile_commands').pick_compile_commands(vim.fn.getcwd())
+end, { desc = 'Pro[j]ect: Pick [c]ompile commands JSON file in working directory' })
+
+vim.keymap.set('n', '<leader>jC', function()
+  require('custom.pick_compile_commands').pick_compile_commands '/'
+end, { desc = 'Pro[j]ect: Pick [C]ompile commands JSON file in root directory' })
 
 vim.keymap.set('n', '<leader>sc', function()
   require('custom.search_files_compile_commands').search_file_in_compile_commands()
@@ -284,6 +283,14 @@ require('lazy').setup({
         topdelete = { text = '‾' }, ---@diagnostic disable-line: missing-fields
         changedelete = { text = '~' }, ---@diagnostic disable-line: missing-fields
       },
+    },
+  },
+
+  { -- visualizer for Neovim’s internal undo tree
+    'mbbill/undotree',
+    cmd = 'UndotreeToggle',
+    keys = {
+      { '<leader>u', '<cmd>UndotreeToggle<cr>', desc = '[U]ndo tree' }
     },
   },
 
@@ -572,7 +579,8 @@ require('lazy').setup({
         'j-hui/fidget.nvim',
         opts = {
           notification = {
-            override_vim_notify = true
+            -- vim.notify() handled via fidget, not that good.
+            -- override_vim_notify = true
           }
         }
       },

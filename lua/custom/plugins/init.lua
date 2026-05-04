@@ -3,6 +3,9 @@
 --
 -- See the kickstart.nvim README for more information
 
+-- Add :LspInfo alias
+vim.api.nvim_create_user_command('LspInfo', 'checkhealth vim.lsp', {})
+
 ---@module 'lazy'
 ---@type LazySpec
 return {}
