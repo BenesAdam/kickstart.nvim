@@ -325,7 +325,7 @@ require('lazy').setup({
       spec = {
         { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
         { '<leader>t', group = '[T]oggle' },
-        { '<leader>t', group = '[P]roject' },
+        { '<leader>p', group = '[P]roject' },
         { '<leader>y', group = '[Y]ank' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
@@ -335,6 +335,23 @@ require('lazy').setup({
 
   -- Key analyzer to show which mappings are free to be mapped
   { 'meznaric/key-analyzer.nvim', opts = {} },
+
+  -- Adds image support to Neovim
+  { '3rd/image.nvim', opts = {} },
+
+  {
+    "antosha417/nvim-lsp-file-operations",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    -- Uncomment whichever supported plugin(s) you use
+    -- "nvim-tree/nvim-tree.lua",
+    "nvim-neo-tree/neo-tree.nvim",
+    -- "simonmclean/triptych.nvim"
+    },
+    config = function()
+      require("lsp-file-operations").setup()
+    end,
+  },
 
   -- NOTE: Plugins can specify dependencies.
   --
@@ -551,7 +568,14 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
+      {
+        'j-hui/fidget.nvim',
+        opts = {
+          notification = {
+            override_vim_notify = true
+          }
+        }
+      },
     },
     config = function()
       -- Brief aside: **What is LSP?**
