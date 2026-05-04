@@ -3,8 +3,18 @@
 vim.pack.add { 'https://github.com/mfussenegger/nvim-lint' }
 
 local lint = require 'lint'
+vim.g.lint_enabled = vim.g.lint_enabled or false
+
+local clangtidy = lint.linters.clangtidy
+clangtidy.args = {
+  '--quiet',
+  '--checks=-*,clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*,modernize-*,performance-*,readability-*,misc-*,deadcode-*,clang-diagnostic-*,concurrency-*,portability-*',
+}
+
 lint.linters_by_ft = {
   markdown = { 'markdownlint' }, -- Make sure to install `markdownlint` via mason / npm
+  python = { 'pylint' },
+  cpp = { 'clangtidy' },
 }
 
 -- To allow other plugins to add linters to require('lint').linters_by_ft,
@@ -45,9 +55,23 @@ local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
 vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
   group = lint_augroup,
   callback = function()
-    -- Only run the linter in buffers that you can modify in order to
-    -- avoid superfluous noise, notably within the handy LSP pop-ups that
-    -- describe the hovered symbol using Markdown.
-    if vim.bo.modifiable then lint.try_lint() end
+    if vim.g.lint_enabled and vim.bo.modifiable then
+      lint.try_lint()
+    end
   end,
 })
+
+vim.keymap.set('n', '<leader>tl', function()
+  vim.g.lint_enabled = not vim.g.lint_enabled
+  if vim.g.lint_enabled then
+    lint.try_lint()
+    vim.notify('Lint enabled', vim.log.levels.INFO)
+  else
+    for _, linters in pairs(lint.linters_by_ft) do
+      for _, name in ipairs(linters) do
+        vim.diagnostic.reset(lint.get_namespace(name))
+      end
+    end
+    vim.notify('Lint disabled', vim.log.levels.INFO)
+  end
+end, { desc = '[T]oggle [L]int' })

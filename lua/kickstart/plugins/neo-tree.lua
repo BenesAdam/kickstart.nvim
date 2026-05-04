@@ -20,6 +20,7 @@ require('neo-tree').setup {
     window = {
       mappings = {
         ['\\'] = 'close_window',
+        ['<space>'] = 'none', -- to enable which-key for <leader> key
       },
     },
   },

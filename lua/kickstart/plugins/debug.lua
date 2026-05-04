@@ -12,18 +12,39 @@ vim.pack.add {
   'https://github.com/nvim-neotest/nvim-nio',
   'https://github.com/mason-org/mason.nvim',
   'https://github.com/jay-babu/mason-nvim-dap.nvim',
-  'https://github.com/leoluz/nvim-dap-go',
+  'https://github.com/mfussenegger/nvim-dap-python',
+  'https://github.com/microsoft/debugpy',
 }
 
 -- Basic debugging keymaps, feel free to change to your liking!
-vim.keymap.set('n', '<F5>', function() require('dap').continue() end, { desc = 'Debug: Start/Continue' })
-vim.keymap.set('n', '<F1>', function() require('dap').step_into() end, { desc = 'Debug: Step Into' })
-vim.keymap.set('n', '<F2>', function() require('dap').step_over() end, { desc = 'Debug: Step Over' })
-vim.keymap.set('n', '<F3>', function() require('dap').step_out() end, { desc = 'Debug: Step Out' })
-vim.keymap.set('n', '<leader>b', function() require('dap').toggle_breakpoint() end, { desc = 'Debug: Toggle Breakpoint' })
-vim.keymap.set('n', '<leader>B', function() require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, { desc = 'Debug: Set Breakpoint' })
+vim.keymap.set('n', '<F5>', function()
+  require('dap').continue()
+end, { desc = 'Debug: Start/Continue' })
+vim.keymap.set('n', '<F1>', function()
+  require('dap').step_into()
+end, { desc = 'Debug: Step Into' })
+vim.keymap.set('n', '<F2>', function()
+  require('dap').step_over()
+end, { desc = 'Debug: Step Over' })
+vim.keymap.set('n', '<F3>', function()
+  require('dap').step_out()
+end, { desc = 'Debug: Step Out' })
+vim.keymap.set('n', '<leader>b', function()
+  require('dap').toggle_breakpoint()
+end, { desc = 'Debug: Toggle Breakpoint' })
+vim.keymap.set('n', '<leader>B', function()
+  require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+end, { desc = 'Debug: Set Breakpoint' })
 -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-vim.keymap.set('n', '<F7>', function() require('dapui').toggle() end, { desc = 'Debug: See last session result.' })
+vim.keymap.set('n', '<F7>', function()
+  require('dapui').toggle()
+end, { desc = 'Debug: See last session result.' })
+vim.keymap.set('n', '<F8>', function()
+  require('dap').terminate()
+end, { desc = 'Debug: Stop' })
+vim.keymap.set('n', '<leader>?', function()
+  require('dapui').eval(nil, { enter = true })
+end, { desc = 'Debug: Eval var under cursor.' })
 
 local dap = require 'dap'
 local dapui = require 'dapui'
@@ -41,7 +62,8 @@ require('mason-nvim-dap').setup {
   -- online, please don't ask me how to install them :)
   ensure_installed = {
     -- Update this to ensure that you have the debuggers for the langs you want
-    'delve',
+    'codelldb', -- C/C++ debugger
+    'debugpy', -- Python debugger
   },
 }
 
@@ -86,10 +108,97 @@ dap.listeners.before.event_terminated['dapui_config'] = dapui.close
 dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
 -- Install golang specific config
-require('dap-go').setup {
-  delve = {
-    -- On Windows delve must be run attached or it crashes.
-    -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-    detached = vim.fn.has 'win32' == 0,
+-- require('dap-go').setup {
+--   delve = {
+--     -- On Windows delve must be run attached or it crashes.
+--     -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
+--     detached = vim.fn.has 'win32' == 0,
+--   },
+-- }
+
+-- PI10 UT
+local stat = vim.uv.fs_stat '/repos/bsw_est90'
+local is_pi10 = stat and stat.type == 'directory'
+
+local current_dir = require('plenary.path'):new(vim.fn.getcwd())
+local ut_folder_name = current_dir:_split()[#current_dir:_split()]
+local ut_output_folder = '/output/est90_unittest/' .. ut_folder_name .. '_pc_msvc10/default'
+
+local get_ut_executable = function()
+  -- Build unittest
+  vim.notify('Building...', vim.log.levels.INFO)
+  local out = vim.fn.system 'm_git.bat linker'
+
+  if vim.v.shell_error ~= 0 then
+    vim.notify('Error during building.' .. out, vim.log.levels.ERROR)
+    return nil
+  end
+
+  -- Get executable path
+  local output = ut_output_folder .. '/' .. ut_folder_name .. '_pc_msvc10_default.exe'
+  vim.notify('Debugging: ' .. output, vim.log.levels.INFO)
+
+  return output
+end
+
+-- DAP configurations
+dap.adapters.lldb = {
+  type = 'server',
+  port = '${port}',
+  executable = {
+    command = 'codelldb.cmd',
+    args = { '--port', '${port}' },
+    detached = vim.loop.os_uname().sysname ~= 'Windows',
   },
 }
+
+dap.adapters.gdb = {
+  type = 'executable',
+  command = 'gdb',
+  name = 'gdb',
+  args = { '-i', 'dap' },
+  options = {
+    detached = false,
+  },
+}
+
+dap.configurations.cpp = {}
+
+if is_pi10 then
+  table.insert(dap.configurations.cpp, {
+    name = 'PI10 UT',
+    type = 'lldb',
+    request = 'launch',
+    cwd = ut_output_folder,
+    stopAtEntry = false,
+    program = get_ut_executable,
+  })
+
+  table.insert(dap.configurations.cpp, {
+    name = 'PI10 SIL',
+    type = 'lldb',
+    request = 'attach',
+    cwd = '/output/est90_sil',
+    stopAtEntry = false,
+    program = '/output/est90_sil/delivery/EST90_EVDEGT/EST90_EVDEGT.exe',
+  })
+end
+
+dap.configurations.c = dap.configurations.cpp
+
+-- Python: setup with python path from debugpy env folder
+local is_linux = vim.loop.os_uname().sysname == 'Linux'
+
+local python_path = table
+  .concat({
+    vim.fn.stdpath 'data',
+    'mason',
+    'packages',
+    'debugpy',
+    'venv',
+    is_linux and 'bin' or 'Scripts',
+    'python',
+  }, '/')
+  :gsub('//+', '/')
+
+require('dap-python').setup(python_path)
