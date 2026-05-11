@@ -727,7 +727,7 @@ do
       map('grco', require('telescope.builtin').lsp_outgoing_calls, '[G]oto [C]alls [O]utcoming')
 
       -- Toggle source/header file
-      map('gko', vim.cmd.ClangdSwitchSourceHeader, 'Toggle source/header file')
+     map('gko', vim.cmd.LspClangdSwitchSourceHeader, 'Toggle source/header file')
 
       -- The following two autocommands are used to highlight references of the
       -- word under your cursor when your cursor rests there for a little while.
