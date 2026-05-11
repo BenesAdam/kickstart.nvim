@@ -334,6 +334,11 @@ do
   -- and then call its `setup()` function to start it with default settings.
   vim.pack.add { gh 'NMAC427/guess-indent.nvim' }
   require('guess-indent').setup {
+    filetype_exclude = {
+      "netrw", "tutor",
+      "cpp", "hpp",
+      "c", "h",
+    },
     on_tab_options = {
       ['expandtab'] = false,
       ['tabstop'] = 2,
@@ -341,6 +346,19 @@ do
       ['softtabstop'] = 2,
     },
   }
+
+  -- Fixed tabsize for c++/c
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "cpp", "hpp", "c", "h" },
+    callback = function()
+      vim.b.guess_indent_disable = true
+
+      vim.bo.expandtab = true
+      vim.bo.tabstop = 2
+      vim.bo.shiftwidth = 2
+      vim.bo.softtabstop = 2
+    end,
+  })
 
   -- Because lua is a real programming language, you can also have some logic to your installation -
   -- like only installing a plugin if a condition is met.
