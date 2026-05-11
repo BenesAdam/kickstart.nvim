@@ -799,9 +799,6 @@ do
     -- gopls = {},
     pyright = {},
     bashls = {},
-    neocmake = {
-      cmd = { 'neocmakelsp', 'stdio' },
-    },
     -- rust_analyzer = {},
     --
     -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -873,7 +870,6 @@ do
     'clang-format', -- Used to format c/c++ code
     'mdformat', -- Used to format markdown
     'black', -- Used to format python
-    'neocmake', -- LSP for cmake
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
