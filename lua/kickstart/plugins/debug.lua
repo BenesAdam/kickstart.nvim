@@ -127,7 +127,7 @@ local ut_output_folder = '/output/est90_unittest/' .. ut_folder_name .. '_pc_msv
 local get_ut_executable = function()
   -- Build unittest
   vim.notify('Building...', vim.log.levels.INFO)
-  local out = vim.fn.system 'm_git.bat linker'
+  local out = vim.fn.system 'cd ' .. current_dir:absolute() .. ' && m_git.bat linker'
 
   if vim.v.shell_error ~= 0 then
     vim.notify('Error during building.' .. out, vim.log.levels.ERROR)
