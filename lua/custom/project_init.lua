@@ -1,8 +1,23 @@
 local M = {}
 local project_module = nil
 
+function M.is_work()
+  local config_path = vim.fn.getcwd() .. '/.lfsconfig'
+
+  if vim.fn.filereadable(config_path) == 0 then
+    return false
+  end
+
+  local content = table.concat(vim.fn.readfile(config_path), '\n')
+  return content:find 'artifactory%.bluel3%.com' ~= nil
+end
+
 function M.get_path()
-  return vim.fn.getcwd() .. '/lua/init.lua'
+  if M.is_work() then
+    return vim.fn.expand '~/lua/init.lua'
+  else
+    return vim.fn.getcwd() .. '/lua/init.lua'
+  end
 end
 
 function M.exists()

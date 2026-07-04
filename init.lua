@@ -335,9 +335,12 @@ do
   vim.pack.add { gh 'NMAC427/guess-indent.nvim' }
   require('guess-indent').setup {
     filetype_exclude = {
-      "netrw", "tutor",
-      "cpp", "hpp",
-      "c", "h",
+      'netrw',
+      'tutor',
+      'cpp',
+      'hpp',
+      'c',
+      'h',
     },
     on_tab_options = {
       ['expandtab'] = false,
@@ -348,8 +351,8 @@ do
   }
 
   -- Fixed tabsize for c++/c
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "cpp", "hpp", "c", "h" },
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'cpp', 'hpp', 'c', 'h' },
     callback = function()
       vim.b.guess_indent_disable = true
 
@@ -552,11 +555,19 @@ do
     -- You can put your default mappings / updates / etc. in here
     --  All the info you're looking for is in `:help telescope.setup()`
     --
-    -- defaults = {
-    --   mappings = {
-    --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-    --   },
-    -- },
+    defaults = {
+      -- Wait 300 ms after last keystroke before searching.
+      -- Prevents repeated scans while typing in large repos.
+      debounce = 300,
+      preview = {
+        -- Delay preview rendering until hovering on a result for 300 ms.
+        -- Preview won't render while actively typing.
+        timeout = 300,
+      },
+      -- mappings = {
+      --   i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+      -- },
+    },
     -- pickers = {}
     extensions = {
       ['ui-select'] = { require('telescope.themes').get_dropdown() },
@@ -745,7 +756,7 @@ do
       map('grco', require('telescope.builtin').lsp_outgoing_calls, '[G]oto [C]alls [O]utcoming')
 
       -- Toggle source/header file
-     map('gko', vim.cmd.LspClangdSwitchSourceHeader, 'Toggle source/header file')
+      map('gko', vim.cmd.LspClangdSwitchSourceHeader, 'Toggle source/header file')
 
       -- The following two autocommands are used to highlight references of the
       -- word under your cursor when your cursor rests there for a little while.

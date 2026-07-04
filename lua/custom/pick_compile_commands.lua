@@ -27,7 +27,7 @@ function M.pick_compile_commands(root_folder, callback)
         compile_commands_path = compile_commands_dir .. '/compile_commands.json'
 
         -- New configuration of clangd
-        vim.lsp.config('clangd', {cmd = M.get_command()})
+        vim.lsp.config('clangd', { cmd = M.get_command() })
 
         -- Restart clangd clients
         local lsp_clients = vim.lsp.get_clients { name = 'clangd' }
@@ -62,7 +62,10 @@ function M.get_command()
 
   local project_clangd_sufix = require('custom.project_init').get_clangd_sufix()
   if project_clangd_sufix ~= '' then
-    table.insert(cmd, project_clangd_sufix)
+    local args = vim.split(project_clangd_sufix, '%s+', { trimempty = true })
+    for _, arg in ipairs(args) do
+      table.insert(cmd, arg)
+    end
   end
 
   return cmd
