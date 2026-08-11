@@ -190,6 +190,83 @@ do
   vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]], { desc = '[Y]ank into system clipboard' })
   vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = '[Yank] whole line into system clipboard' })
 
+  -- Copy file reference (<leader>r)
+  local function current_file_path()
+    local path = vim.fn.expand '%:p'
+    if path == '' then
+      vim.notify('Current buffer has no file path.', vim.log.levels.WARN)
+      return nil
+    end
+    return path
+  end
+
+  -- Copies "<absolute-file-path>:<line>" from normal mode.
+  local function copy_file_reference_cursor()
+    local path = current_file_path()
+    if not path then
+      return
+    end
+
+    local text = path .. ':' .. vim.fn.line '.'
+    vim.fn.setreg('+', text)
+    vim.notify('Copied: ' .. text, vim.log.levels.INFO)
+  end
+
+  -- Copies a file reference from visual selection:
+  --   - whole single line: "<absolute-file-path>:<line>"
+  --   - single-line range: "<absolute-file-path>:<line>:<start_col>-<end_col>"
+  --   - multi-line range: "<absolute-file-path>:<start_line>-<end_line>"
+  local function copy_file_reference_visual()
+    local path = current_file_path()
+    if not path then
+      return
+    end
+
+    local vmode = vim.fn.mode()
+    local region = vim.fn.getregionpos(vim.fn.getpos 'v', vim.fn.getpos '.')
+    if type(region) ~= 'table' or #region == 0 then
+      vim.notify('Cannot read visual selection.', vim.log.levels.ERROR)
+      return
+    end
+
+    local first = region[1]
+    local last = region[#region]
+    if type(first) ~= 'table' or type(last) ~= 'table' or type(first[1]) ~= 'table' or type(last[2]) ~= 'table' then
+      vim.notify('Cannot parse visual selection.', vim.log.levels.ERROR)
+      return
+    end
+
+    local start_line, start_col = first[1][2], first[1][3]
+    local end_line, end_col = last[2][2], last[2][3]
+    local text
+
+    if vmode == 'V' then
+      if start_line == end_line then
+        text = path .. ':' .. start_line
+      else
+        text = path .. ':' .. start_line .. '-' .. end_line
+      end
+    elseif start_line == end_line then
+      local line_len = #vim.fn.getline(start_line)
+      local whole_line = start_col == 1 and end_col >= line_len
+      if whole_line then
+        text = path .. ':' .. start_line
+      else
+        local start_vcol = vim.fn.virtcol { start_line, start_col }
+        local end_vcol = vim.fn.virtcol { end_line, end_col }
+        text = path .. ':' .. start_line .. ':' .. start_vcol .. '-' .. end_vcol
+      end
+    else
+      text = path .. ':' .. start_line .. '-' .. end_line
+    end
+
+    vim.fn.setreg('+', text)
+    vim.notify('Copied: ' .. text, vim.log.levels.INFO)
+  end
+
+  vim.keymap.set('n', '<leader>r', copy_file_reference_cursor, { desc = 'Copy file [r]eference for cursor' })
+  vim.keymap.set('x', '<leader>r', copy_file_reference_visual, { desc = 'Copy file [r]eference for selection' })
+
   -- vim.keymap.set('n', '<C-k>', '<cmd>cnext<CR>zz', { desct = 'Go up in quickfix list' })
   -- vim.keymap.set('n', '<C-j>', '<cmd>cprev<CR>zz', { desct = 'Go down in quickfix list' })
   -- vim.keymap.set('n', '<leader>k', '<cmd>lnext<CR>zz', { desct = 'Go up in location list' })
