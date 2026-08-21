@@ -688,6 +688,19 @@ do
     builtin.buffers {
       sort_mru = true, -- Sorts all buffers after most recent used
       select_current = true, -- Select current buffer
+      attach_mappings = function(_, map)
+        -- Close every buffer except the selected one.
+        map({ 'i', 'n' }, '<M-o>', function(prompt_bufnr)
+          local keep = require('telescope.actions.state').get_selected_entry()
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if buf ~= keep.bufnr and vim.bo[buf].buflisted then
+              vim.api.nvim_buf_delete(buf, {})
+            end
+          end
+          require('telescope.actions').close(prompt_bufnr)
+        end)
+        return true
+      end,
     }
   end, { desc = '[ ] Find existing buffers' })
 
