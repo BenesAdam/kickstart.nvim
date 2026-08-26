@@ -641,9 +641,11 @@ do
         -- Preview won't render while actively typing.
         timeout = 300,
       },
-      -- mappings = {
-      --   i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-      -- },
+      mappings = {
+        -- Toggle the preview window on/off in any picker.
+        i = { ['<M-p>'] = require('telescope.actions.layout').toggle_preview },
+        n = { ['<M-p>'] = require('telescope.actions.layout').toggle_preview },
+      },
     },
     -- pickers = {}
     extensions = {
