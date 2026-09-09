@@ -212,6 +212,18 @@ do
     vim.notify('Copied: ' .. text, vim.log.levels.INFO)
   end
 
+  -- Copies only the current file name.
+  local function copy_file_reference_name_only()
+    local filename = vim.fn.expand '%:t'
+    if filename == '' then
+      vim.notify('Current buffer has no file name.', vim.log.levels.WARN)
+      return
+    end
+
+    vim.fn.setreg('+', filename)
+    vim.notify('Copied: ' .. filename, vim.log.levels.INFO)
+  end
+
   -- Copies a file reference from visual selection:
   --   - whole single line: "<absolute-file-path>:<line>"
   --   - single-line range: "<absolute-file-path>:<line>:<start_col>-<end_col>"
@@ -266,6 +278,8 @@ do
 
   vim.keymap.set('n', '<leader>r', copy_file_reference_cursor, { desc = 'Copy file [r]eference for cursor' })
   vim.keymap.set('x', '<leader>r', copy_file_reference_visual, { desc = 'Copy file [r]eference for selection' })
+  vim.keymap.set('n', '<leader>R', copy_file_reference_name_only, { desc = 'Copy current file name' })
+  vim.keymap.set('x', '<leader>R', copy_file_reference_name_only, { desc = 'Copy current file name' })
 
   -- vim.keymap.set('n', '<C-k>', '<cmd>cnext<CR>zz', { desct = 'Go up in quickfix list' })
   -- vim.keymap.set('n', '<C-j>', '<cmd>cprev<CR>zz', { desct = 'Go down in quickfix list' })
