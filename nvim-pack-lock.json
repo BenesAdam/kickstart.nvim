@@ -10,6 +10,10 @@
       "src": "https://github.com/bjarneo/aether.nvim",
       "version": "'v3'"
     },
+    "ashen.nvim": {
+      "rev": "bfb04bd50b69d863469b2deb9fb361cf0d945ba7",
+      "src": "https://github.com/ficcdaf/ashen.nvim"
+    },
     "blame.nvim": {
       "rev": "179da7aaacce7c52874af636255ede72dd6fe796",
       "src": "https://github.com/FabijanZulj/blame.nvim"
